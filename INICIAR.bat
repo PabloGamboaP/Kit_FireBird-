@@ -42,12 +42,7 @@ if errorlevel 1 (
     exit
 )
 
-REM Mostrar que Python se esta usando
-echo Detectando Python...
-python --version
-echo.
-
-REM Verificar si fdb esta instalado
+REM Verificar si fdb esta instalado (silenciosamente)
 python -c "import fdb" >nul 2>&1
 if errorlevel 1 (
     cls
@@ -59,6 +54,9 @@ if errorlevel 1 (
     echo.
     echo 'fdb' es el driver de Python para conectarse a bases de datos Firebird.
     echo Sin este paquete, no podras usar este kit.
+    echo.
+    echo Version de Python detectada:
+    python --version
     echo.
     echo Deseas instalar 'fdb' ahora? (S/N)
     set /p instalar="Respuesta: "
@@ -80,7 +78,7 @@ if errorlevel 1 (
             echo [OK] Paquete 'fdb' instalado correctamente.
             echo.
             echo Verificando instalacion...
-            python -c "import fdb; print('fdb version:', fdb.__version__)"
+            python -c "import fdb; print('[OK] fdb version:', fdb.__version__)" 2>nul
             echo.
             if errorlevel 1 (
                 echo [ADVERTENCIA] fdb se instalo pero no se puede importar.
@@ -90,7 +88,8 @@ if errorlevel 1 (
             ) else (
                 echo [OK] fdb funciona correctamente!
                 echo.
-                pause
+                echo Presiona cualquier tecla para continuar al menu...
+                pause >nul
                 goto MENU
             )
         )

@@ -22,10 +22,11 @@ Sistema portátil para consultar y explorar la base de datos Firebird de activos
 - Doble clic en: `INICIAR.bat`
 - El script detecta automáticamente si falta `fdb`
 - Te pregunta si deseas instalarlo (responde **S**)
-- Cerrar y ejecutar `INICIAR.bat` de nuevo
 - Listo!
 
 **Después de la primera vez:** Solo doble clic en `INICIAR.bat`
+
+**Verificar instalación:** Ejecuta `verificar_dependencias.bat` para verificar que todo está correcto
 
 ---
 
@@ -35,6 +36,7 @@ Sistema portátil para consultar y explorar la base de datos Firebird de activos
 KIT_CONEXION_FIREBIRD/
 ├── README.md                       # Esta documentación
 ├── INICIAR.bat                     # Menu principal (USAR ESTE)
+├── verificar_dependencias.bat      # Verificar instalación rápida
 ├── MIGRACION_COMPLETA.bat         # Migración automática completa
 ├── INICIAR_CON_VENV.bat           # Para desarrolladores con Django
 ├── configuracion.ini.example       # Plantilla de configuración (COPIAR Y RENOMBRAR)
@@ -413,14 +415,16 @@ Si prefieres una interfaz gráfica para consultas SQL:
 - El .bat pregunta si deseas instalarla
 - Responder **S**
 - Esperar a que instale (1 minuto)
-- Cerrar y ejecutar `INICIAR.bat` de nuevo
+- El script continúa automáticamente al menú
+
+**Nota:** Ya no es necesario cerrar y abrir el .bat de nuevo después de instalar fdb
 
 ### "unavailable database"
 **Solución:**
 - Verificar que el archivo .gdb existe en la ruta configurada
 - Si es local: verificar que `C:\temp\activos.gdb` existe
 - Si es remoto: verificar conectividad de red al servidor
-- Usar opción 6 para editar la ruta en `configuracion.ini`
+- Usar opción 9 para editar la ruta en `configuracion.ini`
 
 ### "Error de conexion al servidor"
 **Solución:**
@@ -435,11 +439,11 @@ Si prefieres una interfaz gráfica para consultas SQL:
 - Verificar que tiene activos asignados
 - Probar con cédula de ejemplo: `43875542`
 
-### El .bat se cierra inmediatamente después de instalar
+### Verificar que todo está bien instalado
 **Solución:**
-- Esto es normal después de instalar fdb
-- Simplemente ejecutar `INICIAR.bat` de nuevo
-- Los cambios ya están aplicados
+- Ejecutar `verificar_dependencias.bat`
+- Revisa el reporte de cada componente
+- Corrige los que aparezcan con [X]
 
 ---
 

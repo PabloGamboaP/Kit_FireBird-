@@ -1,6 +1,41 @@
 @echo off
 title Migracion Completa Firebird a SQL Server - UNP
 
+REM Verificar Python silenciosamente
+python --version >nul 2>&1
+if errorlevel 1 (
+    cls
+    echo ================================================================================
+    echo                         PYTHON NO INSTALADO
+    echo ================================================================================
+    echo.
+    echo [ERROR] Python no esta instalado en este PC.
+    echo.
+    echo Instala Python 3.11+ desde: https://www.python.org/downloads/
+    echo.
+    pause
+    exit
+)
+
+REM Verificar fdb silenciosamente
+python -c "import fdb" >nul 2>&1
+if errorlevel 1 (
+    cls
+    echo ================================================================================
+    echo                    DEPENDENCIA FALTANTE: fdb
+    echo ================================================================================
+    echo.
+    echo [ERROR] El paquete 'fdb' no esta instalado.
+    echo.
+    echo Para instalar, ejecuta:
+    echo   python -m pip install --user fdb
+    echo.
+    echo O ejecuta INICIAR.bat que te guiara en la instalacion.
+    echo.
+    pause
+    exit
+)
+
 cls
 echo ================================================================================
 echo           MIGRACION COMPLETA: FIREBIRD ^-^> SQL SERVER
