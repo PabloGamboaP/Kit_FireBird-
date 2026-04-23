@@ -33,42 +33,89 @@ Sistema portátil para consultar y explorar la base de datos Firebird de activos
 
 ```
 KIT_CONEXION_FIREBIRD/
-├── README.md                    # Esta documentación
-├── INICIAR.bat                  # Menu principal (USAR ESTE)
-├── INICIAR_CON_VENV.bat        # Para desarrolladores con Django
-├── configuracion.ini.example    # Plantilla de configuración (COPIAR Y RENOMBRAR)
-├── configuracion.ini            # Tu configuración (NO SUBIR A GIT)
-├── .gitignore                   # Protege credenciales
-├── fbclient.dll                # Cliente Firebird 64-bit (NO ELIMINAR)
-├── conexion_simple.py          # Script: Probar conexión
-├── explorar_tablas.py          # Script: Listar y explorar tablas
-└── consultar_activos.py        # Script: Consultar activos por cédula
+├── README.md                       # Esta documentación
+├── INICIAR.bat                     # Menu principal (USAR ESTE)
+├── MIGRACION_COMPLETA.bat         # Migración automática completa
+├── INICIAR_CON_VENV.bat           # Para desarrolladores con Django
+├── configuracion.ini.example       # Plantilla de configuración (COPIAR Y RENOMBRAR)
+├── configuracion.ini               # Tu configuración (NO SUBIR A GIT)
+├── .gitignore                      # Protege credenciales
+├── fbclient.dll                   # Cliente Firebird 64-bit (NO ELIMINAR)
+│
+├── CONSULTAS:
+├── conexion_simple.py             # Script: Probar conexión
+├── explorar_tablas.py             # Script: Listar y explorar tablas
+├── consultar_activos.py           # Script: Consultar activos por cédula
+│
+└── MIGRACIÓN A SQL SERVER:
+    ├── extraer_modelo_er.py           # Script: Extraer esquema (PKs, FKs)
+    ├── extraer_triggers_procedures.py # Script: Extraer triggers y SPs
+    ├── analizar_normalizacion.py      # Script: Analizar problemas de normalización
+    └── exportar_data_completa.py      # Script: Exportar data a CSV
 ```
 
 ---
 
 ## Funcionalidades
 
-### 1. Probar conexión a Firebird
+### CONSULTAS
+
+#### 1. Probar conexión a Firebird
 Verifica que puedes conectarte a la base de datos y muestra información básica (número de tablas, registros).
 
-### 2. Listar todas las tablas
+#### 2. Listar todas las tablas
 Muestra todas las tablas disponibles en la base de datos con el número de registros de cada una.
 
-### 3. Ver estructura de una tabla
+#### 3. Ver estructura de una tabla
 Te pide el nombre de una tabla y muestra todas las columnas, tipos de datos y ejemplos de registros.
 
 **Ejemplo:** `MATERIAL`, `TERCEROS`, `SALAJUSTES`
 
-### 4. Consultar activos por cédula
+#### 4. Consultar activos por cédula
 Te pide una cédula y muestra todos los activos asignados a esa persona (placa, descripción, serial, dependencia, valor).
 
 **Ejemplo:** `43875542`
 
-### 5. Verificar instalación
+### MIGRACIÓN A SQL SERVER
+
+#### 5. Extraer modelo Entidad-Relación
+Extrae el esquema completo de la base de datos:
+- Todas las tablas con columnas y tipos de datos
+- Primary Keys (PKs)
+- Foreign Keys (FKs) - relaciones entre tablas
+- Índices y constraints
+- Genera archivos `.txt` (documentación) y `.sql` (script SQL Server)
+
+**Salida:** `modelo_er_TIMESTAMP.txt` y `modelo_er_TIMESTAMP.sql`
+
+#### 6. Extraer Triggers y Stored Procedures
+Extrae toda la lógica de negocio:
+- Código fuente completo de todos los triggers
+- Código fuente completo de todos los stored procedures
+- Parámetros de entrada/salida
+- Comentarios para conversión a T-SQL
+
+**Salida:** `triggers_procedures_TIMESTAMP.txt` y `triggers_procedures_TIMESTAMP.sql`
+
+**NOTA:** Requiere conversión manual de sintaxis Firebird a SQL Server
+
+#### 7. Exportar toda la data (CSV)
+Exporta todos los datos para normalización:
+- Cada tabla se exporta a un archivo CSV individual
+- Todos los registros de todas las tablas
+- Archivo de resumen con estadísticas
+- Formato UTF-8 con BOM para Excel
+
+**Salida:** Carpeta `data_export_TIMESTAMP/` con archivos CSV
+
+**ADVERTENCIA:** Puede tomar varios minutos dependiendo del tamaño de la BD
+
+### CONFIGURACIÓN
+
+#### 8. Verificar instalación
 Verifica que Python, fdb, fbclient.dll y configuracion.ini estén correctamente instalados.
 
-### 6. Editar configuración
+#### 9. Editar configuración
 Abre `configuracion.ini` en Notepad para cambiar host, database, usuario o password.
 
 ---
@@ -111,6 +158,163 @@ charset = WIN1252
 3. Modificar los valores necesarios
 4. Guardar y cerrar
 5. Probar conexión (opción 1)
+
+---
+
+## Proceso de Migración a SQL Server
+
+Este kit incluye herramientas para facilitar la migración de Firebird a SQL Server:
+
+### Opción A: Migración Automática Completa (Recomendado)
+
+Ejecutar `MIGRACION_COMPLETA.bat` para realizar todos los pasos automáticamente:
+
+```bash
+# Doble clic en:
+MIGRACION_COMPLETA.bat
+```
+
+Este script ejecuta los 4 pasos en secuencia:
+1. Extrae el modelo ER
+2. Extrae triggers y stored procedures
+3. Analiza problemas de normalización
+4. Exporta toda la data a CSV
+
+**Tiempo estimado:** 5-15 minutos dependiendo del tamaño de la BD
+
+### Opción B: Migración Manual Paso a Paso
+
+### Paso 1: Extraer el Modelo (Opción 5)
+```bash
+python extraer_modelo_er.py
+```
+
+**Genera:**
+- `modelo_er_TIMESTAMP.txt` - Documentación legible del esquema
+- `modelo_er_TIMESTAMP.sql` - Script SQL Server con CREATE TABLE y ALTER TABLE
+
+**Contiene:**
+- Definición de todas las tablas con tipos de datos convertidos
+- Primary Keys
+- Foreign Keys con relaciones
+- Índices
+
+### Paso 2: Extraer Lógica de Negocio (Opción 6)
+```bash
+python extraer_triggers_procedures.py
+```
+
+**Genera:**
+- `triggers_procedures_TIMESTAMP.txt` - Documentación de triggers y SPs
+- `triggers_procedures_TIMESTAMP.sql` - Código comentado para conversión
+
+**Contiene:**
+- Código fuente de todos los triggers
+- Código fuente de todos los stored procedures
+- Parámetros de entrada/salida
+
+**IMPORTANTE:** La sintaxis Firebird debe convertirse manualmente a T-SQL:
+- `NEW.campo` → `INSERTED.campo`
+- `OLD.campo` → `DELETED.campo`
+- `SUSPEND` → `RETURN`
+- `FOR SELECT ... INTO ... DO` → `CURSOR` o `WHILE`
+
+### Paso 3: Exportar Datos (Opción 7)
+```bash
+python exportar_data_completa.py
+```
+
+**Genera:**
+- Carpeta `data_export_TIMESTAMP/` con archivos CSV
+- Un CSV por cada tabla
+- `_RESUMEN.txt` con estadísticas
+
+**Importar a SQL Server:**
+```sql
+-- Opción 1: SQL Server Management Studio
+-- Clic derecho en BD → Tasks → Import Flat File
+
+-- Opción 2: BULK INSERT
+BULK INSERT [nombre_tabla]
+FROM 'C:\ruta\data_export_TIMESTAMP\TABLA.csv'
+WITH (
+    FIRSTROW = 2,
+    FIELDTERMINATOR = ',',
+    ROWTERMINATOR = '\n',
+    CODEPAGE = '65001'  -- UTF-8
+);
+
+-- Opción 3: bcp utility
+bcp nombre_tabla in "TABLA.csv" -S servidor -d base_datos -T -c -t, -r\n
+```
+
+### Paso 4: Analizar Normalización (Opcional pero Recomendado)
+```bash
+python analizar_normalizacion.py
+```
+
+**Genera:**
+- `analisis_normalizacion_TIMESTAMP.txt`
+
+**Detecta:**
+- Tablas sin Primary Key
+- Columnas con >50% valores NULL
+- Posibles Foreign Keys faltantes
+- Sugerencias de normalización
+
+### Paso 5: Validación Post-Migración
+
+**Verificar conteos:**
+```sql
+-- En Firebird
+SELECT COUNT(*) FROM MATERIAL;
+
+-- En SQL Server
+SELECT COUNT(*) FROM [MATERIAL];
+```
+
+**Verificar relaciones:**
+```sql
+-- Verificar que las FKs funcionan
+SELECT 
+    fk.name AS FK_Name,
+    tp.name AS Parent_Table,
+    tr.name AS Referenced_Table
+FROM sys.foreign_keys fk
+INNER JOIN sys.tables tp ON fk.parent_object_id = tp.object_id
+INNER JOIN sys.tables tr ON fk.referenced_object_id = tr.object_id;
+```
+
+**Verificar datos:**
+```sql
+-- Comparar algunos registros clave
+SELECT TOP 10 * FROM [MATERIAL] ORDER BY CODIGO;
+SELECT TOP 10 * FROM [TERCEROS] ORDER BY NIT;
+```
+
+### Consideraciones de Migración
+
+**Tipos de datos:**
+- `VARCHAR` Firebird → `NVARCHAR` SQL Server (soporte Unicode)
+- `BLOB SUB_TYPE TEXT` → `NVARCHAR(MAX)`
+- `BLOB` → `VARBINARY(MAX)`
+- `DOUBLE PRECISION` → `FLOAT`
+- `TIMESTAMP` → `DATETIME` o `DATETIME2`
+
+**Charset:**
+- Firebird usa `WIN1252`
+- SQL Server usa `UTF-8` o `Latin1_General_CI_AS`
+- Los CSV se exportan en UTF-8 con BOM
+
+**Secuencias/Generadores:**
+- Firebird: `GENERATOR` o `SEQUENCE`
+- SQL Server: `IDENTITY` o `SEQUENCE`
+- Revisar triggers que usan `GEN_ID()`
+
+**Diferencias de sintaxis:**
+- Firebird: `||` para concatenar → SQL Server: `+`
+- Firebird: `SUBSTRING(str FROM pos FOR len)` → SQL Server: `SUBSTRING(str, pos, len)`
+- Firebird: `COALESCE` → SQL Server: `COALESCE` o `ISNULL`
 
 ---
 

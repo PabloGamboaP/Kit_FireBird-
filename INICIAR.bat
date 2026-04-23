@@ -152,13 +152,21 @@ echo ===========================================================================
 echo.
 echo Selecciona una opcion:
 echo.
+echo   CONSULTAS:
 echo   1. Probar conexion a Firebird
 echo   2. Listar todas las tablas
 echo   3. Ver estructura de una tabla
 echo   4. Consultar activos por cedula
-echo   5. Verificar instalacion
-echo   6. Editar configuracion
-echo   7. Salir
+echo.
+echo   MIGRACION A SQL SERVER:
+echo   5. Extraer modelo Entidad-Relacion (tablas, PKs, FKs)
+echo   6. Extraer Triggers y Stored Procedures
+echo   7. Exportar toda la data (CSV para normalizacion)
+echo.
+echo   CONFIGURACION:
+echo   8. Verificar instalacion
+echo   9. Editar configuracion
+echo   0. Salir
 echo.
 echo ================================================================================
 set /p opcion="Ingresa el numero de opcion: "
@@ -167,9 +175,12 @@ if "%opcion%"=="1" goto PROBAR_CONEXION
 if "%opcion%"=="2" goto LISTAR_TABLAS
 if "%opcion%"=="3" goto VER_ESTRUCTURA
 if "%opcion%"=="4" goto CONSULTAR_ACTIVOS
-if "%opcion%"=="5" goto VERIFICAR
-if "%opcion%"=="6" goto EDITAR_CONFIG
-if "%opcion%"=="7" goto SALIR
+if "%opcion%"=="5" goto EXTRAER_MODELO
+if "%opcion%"=="6" goto EXTRAER_TRIGGERS
+if "%opcion%"=="7" goto EXPORTAR_DATA
+if "%opcion%"=="8" goto VERIFICAR
+if "%opcion%"=="9" goto EDITAR_CONFIG
+if "%opcion%"=="0" goto SALIR
 
 echo Opcion invalida
 timeout /t 2 >nul
@@ -219,6 +230,68 @@ echo.
 set /p cedula="Ingresa la cedula (ej: 43875542): "
 echo.
 python consultar_activos.py %cedula%
+echo.
+pause
+goto MENU
+
+:EXTRAER_MODELO
+cls
+echo ================================================================================
+echo                    EXTRAER MODELO ENTIDAD-RELACION
+echo ================================================================================
+echo.
+echo Este proceso extraera:
+echo   - Todas las tablas con sus columnas y tipos de datos
+echo   - Primary Keys
+echo   - Foreign Keys (relaciones entre tablas)
+echo   - Indices
+echo.
+echo Generara archivos .txt y .sql listos para SQL Server
+echo.
+pause
+echo.
+python extraer_modelo_er.py
+echo.
+pause
+goto MENU
+
+:EXTRAER_TRIGGERS
+cls
+echo ================================================================================
+echo                    EXTRAER TRIGGERS Y STORED PROCEDURES
+echo ================================================================================
+echo.
+echo Este proceso extraera:
+echo   - Todos los triggers con su codigo fuente
+echo   - Todos los stored procedures con parametros
+echo   - Codigo comentado para conversion a T-SQL
+echo.
+echo NOTA: Requerira conversion manual de sintaxis Firebird a SQL Server
+echo.
+pause
+echo.
+python extraer_triggers_procedures.py
+echo.
+pause
+goto MENU
+
+:EXPORTAR_DATA
+cls
+echo ================================================================================
+echo                    EXPORTAR DATA COMPLETA (CSV)
+echo ================================================================================
+echo.
+echo Este proceso exportara:
+echo   - Todas las tablas a archivos CSV individuales
+echo   - Todos los registros de cada tabla
+echo   - Archivo de resumen con estadisticas
+echo.
+echo ADVERTENCIA: Puede tomar varios minutos dependiendo del tamano de la BD
+echo.
+set /p confirmar="Deseas continuar? (S/N): "
+if /i not "%confirmar%"=="S" goto MENU
+echo.
+python exportar_data_completa.py
 echo.
 pause
 goto MENU
