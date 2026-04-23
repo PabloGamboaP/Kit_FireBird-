@@ -16,24 +16,42 @@ import configparser
 import os
 import sys
 from datetime import datetime
+from validar_config import validar_o_salir
 
 def cargar_configuracion():
-    config = configparser.ConfigParser()
-    config.read(os.path.join(os.path.dirname(__file__), 'configuracion.ini'))
+    config = validar_o_salir()
     return config['FIREBIRD']
 
 def conectar():
     cfg = cargar_configuracion()
     fbclient_path = os.path.join(os.path.dirname(__file__), 'fbclient.dll')
     
-    return fdb.connect(
-        host=cfg['host'],
-        database=cfg['database'],
-        user=cfg['user'],
-        password=cfg['password'],
-        charset=cfg['charset'],
-        fb_library_name=fbclient_path
-    )
+    try:
+        return fdb.connect(
+            host=cfg['host'],
+            database=cfg['database'],
+            user=cfg['user'],
+            password=cfg['password'],
+            charset=cfg['charset'],
+            fb_library_name=fbclient_path
+        )
+    except Exception as e:
+        print("\n" + "=" * 100)
+        print("ERROR DE CONEXIÓN A FIREBIRD")
+        print("=" * 100)
+        print(f"\n❌ {str(e)}\n")
+        print("POSIBLES CAUSAS:")
+        print("  1. Usuario o password incorrectos")
+        print("  2. El servidor Firebird no está corriendo")
+        print("  3. No hay conectividad de red al servidor")
+        print("  4. El archivo de base de datos no existe")
+        print("  5. El puerto 3050 está bloqueado")
+        print("\nSOLUCIÓN:")
+        print("  - Verifica las credenciales en configuracion.ini")
+        print("  - Usa la opción 9 del menú para editar la configuración")
+        print("  - Usa la opción 1 del menú para probar la conexión")
+        print("\n" + "=" * 100 + "\n")
+        sys.exit(1)
 
 def obtener_tablas(cur):
     """Obtiene todas las tablas de usuario"""

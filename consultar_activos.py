@@ -8,10 +8,10 @@ import fdb
 import configparser
 import os
 import sys
+from validar_config import validar_o_salir
 
 def cargar_configuracion():
-    config = configparser.ConfigParser()
-    config.read(os.path.join(os.path.dirname(__file__), 'configuracion.ini'))
+    config = validar_o_salir()
     return config['FIREBIRD']
 
 def conectar():

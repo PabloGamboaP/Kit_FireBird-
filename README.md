@@ -426,6 +426,16 @@ Si prefieres una interfaz gráfica para consultas SQL:
 - Si es remoto: verificar conectividad de red al servidor
 - Usar opción 9 para editar la ruta en `configuracion.ini`
 
+### "Your user name and password are not defined"
+**Solución:**
+- El archivo `configuracion.ini` tiene credenciales placeholder
+- Editar `configuracion.ini` con credenciales reales:
+  - `password`: Solicitar al administrador de BD (no usar "TU_PASSWORD_AQUI")
+  - `user`: Típicamente "SYSDBA"
+  - `database`: Ruta real al archivo .gdb
+- Usar opción 9 del menú para editar la configuración
+- Usar opción 1 del menú para probar la conexión
+
 ### "Error de conexion al servidor"
 **Solución:**
 - Verificar que el servidor Firebird está corriendo
