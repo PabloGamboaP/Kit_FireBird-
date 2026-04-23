@@ -1,82 +1,195 @@
-# Kit de Conexión a Firebird - Base de Datos Activos UNP
+# Kit de Conexión y Migración Firebird → SQL Server
 
-Sistema portátil para consultar y explorar la base de datos Firebird de activos de la UNP sin necesidad de instalaciones complejas.
+Sistema portátil para consultar y migrar la base de datos Firebird de activos de la UNP a SQL Server.
 
 ---
 
-## Inicio Rápido (3 pasos)
+## 📋 Inicio Rápido
 
 ### 1. Instalar Python
 - Descargar: https://www.python.org/downloads/
 - Durante instalación marcar: **[X] Add Python to PATH**
-- Tiempo: 5 minutos
 
-### 2. Configurar conexión
-- Copiar `configuracion.ini.example` a `configuracion.ini`
-- Editar `configuracion.ini` con tus credenciales:
-  - `password`: Solicitar al administrador de BD
-  - `database`: Ruta al archivo .gdb
-  - `host`: IP del servidor (o vacío para modo local)
+### 2. Configurar Conexión
+```bash
+# Copiar plantilla
+copy configuracion.ini.example configuracion.ini
 
-### 3. Ejecutar INICIAR.bat
-- Doble clic en: `INICIAR.bat`
-- El script detecta automáticamente si falta `fdb`
-- Te pregunta si deseas instalarlo (responde **S**)
-- Cerrar y ejecutar `INICIAR.bat` de nuevo
-- Listo!
-
-**Después de la primera vez:** Solo doble clic en `INICIAR.bat`
-
----
-
-## Contenido del Kit
-
-```
-KIT_CONEXION_FIREBIRD/
-├── README.md                    # Esta documentación
-├── INICIAR.bat                  # Menu principal (USAR ESTE)
-├── INICIAR_CON_VENV.bat        # Para desarrolladores con Django
-├── configuracion.ini.example    # Plantilla de configuración (COPIAR Y RENOMBRAR)
-├── configuracion.ini            # Tu configuración (NO SUBIR A GIT)
-├── .gitignore                   # Protege credenciales
-├── fbclient.dll                # Cliente Firebird 64-bit (NO ELIMINAR)
-├── conexion_simple.py          # Script: Probar conexión
-├── explorar_tablas.py          # Script: Listar y explorar tablas
-└── consultar_activos.py        # Script: Consultar activos por cédula
+# Editar con tus credenciales
+notepad configuracion.ini
 ```
 
----
+**Configurar:**
+- `password`: Solicitar al administrador de BD
+- `database`: Ruta al archivo .gdb
+- `host`: IP del servidor (vacío para modo local)
 
-## Funcionalidades
+### 3. Ejecutar
+```bash
+# Doble clic en:
+INICIAR.bat
+```
 
-### 1. Probar conexión a Firebird
-Verifica que puedes conectarte a la base de datos y muestra información básica (número de tablas, registros).
-
-### 2. Listar todas las tablas
-Muestra todas las tablas disponibles en la base de datos con el número de registros de cada una.
-
-### 3. Ver estructura de una tabla
-Te pide el nombre de una tabla y muestra todas las columnas, tipos de datos y ejemplos de registros.
-
-**Ejemplo:** `MATERIAL`, `TERCEROS`, `SALAJUSTES`
-
-### 4. Consultar activos por cédula
-Te pide una cédula y muestra todos los activos asignados a esa persona (placa, descripción, serial, dependencia, valor).
-
-**Ejemplo:** `43875542`
-
-### 5. Verificar instalación
-Verifica que Python, fdb, fbclient.dll y configuracion.ini estén correctamente instalados.
-
-### 6. Editar configuración
-Abre `configuracion.ini` en Notepad para cambiar host, database, usuario o password.
+**Primera vez:** Si falta `fdb`, usar opción 9 del menú para instalarlo.
 
 ---
 
-## Configuración
+## 📁 Estructura del Proyecto
+
+```
+Kit_FireBird/
+├── INICIAR.bat                     # ⭐ Menú principal
+├── MIGRACION_COMPLETA.bat         # Migración automática
+├── verificar_dependencias.bat      # Verificar instalación
+│
+├── configuracion.ini.example       # Plantilla de configuración
+├── configuracion.ini               # Tu configuración (NO SUBIR A GIT)
+├── fbclient.dll                   # Cliente Firebird (NO ELIMINAR)
+│
+├── SCRIPTS DE CONSULTA:
+│   ├── conexion_simple.py         # Probar conexión
+│   ├── explorar_tablas.py         # Listar y explorar tablas
+│   └── consultar_activos.py       # Consultar activos por cédula
+│
+├── SCRIPTS DE MIGRACIÓN:
+│   ├── extraer_modelo_er.py           # Extraer esquema (PKs, FKs)
+│   ├── extraer_triggers_procedures.py # Extraer triggers y SPs
+│   ├── analizar_normalizacion.py      # Analizar problemas
+│   ├── exportar_data_completa.py      # Exportar todo (pesado)
+│   └── exportar_data_optimizada.py    # Exportar optimizado (recomendado)
+│
+└── migracion_output/               # Archivos generados (auto-creado)
+    ├── modelo_er_*.txt|sql
+    ├── triggers_procedures_*.txt|sql
+    ├── analisis_normalizacion_*.txt
+    └── data_export_*/
+```
+
+---
+
+## 🎯 Menú Principal (INICIAR.bat)
+
+### Consultas
+1. **Probar conexión** - Verifica conectividad a Firebird
+2. **Listar tablas** - Muestra todas las tablas con conteo
+3. **Ver estructura** - Detalle de columnas de una tabla
+4. **Consultar activos** - Activos por cédula
+
+### Migración a SQL Server
+5. **Extraer modelo ER** - Esquema completo (tablas, PKs, FKs, índices)
+6. **Extraer triggers/SPs** - Lógica de negocio
+7. **Exportar data completa** - Todo el historial (~12M registros en SALAJUSTES)
+8. **Exportar data optimizada** ⭐ - Solo último período (~196K registros)
+
+### Configuración
+9. **Verificar instalación** - Estado de Python, fdb, archivos
+A. **Instalar/Actualizar fdb** - Instalar dependencia manualmente
+B. **Editar configuración** - Abrir configuracion.ini
+0. **Salir**
+
+---
+
+## 🔄 Proceso de Migración a SQL Server
+
+### Opción A: Migración Automática (Recomendado)
+
+```bash
+# Ejecutar todo en un solo paso
+MIGRACION_COMPLETA.bat
+```
+
+Ejecuta automáticamente:
+1. Extrae modelo ER
+2. Extrae triggers y stored procedures
+3. Analiza problemas de normalización
+4. Exporta data completa
+
+**Tiempo:** 10-20 minutos
+
+### Opción B: Migración Manual
+
+#### Paso 1: Extraer Esquema (Opción 5)
+```bash
+python extraer_modelo_er.py
+```
+
+**Genera:**
+- `migracion_output/modelo_er_TIMESTAMP.txt` - Documentación
+- `migracion_output/modelo_er_TIMESTAMP.sql` - Script SQL Server
+
+**Contiene:**
+- Tablas con columnas y tipos convertidos
+- Primary Keys
+- Foreign Keys
+- Índices
+
+#### Paso 2: Extraer Lógica (Opción 6)
+```bash
+python extraer_triggers_procedures.py
+```
+
+**Genera:**
+- `migracion_output/triggers_procedures_TIMESTAMP.txt` - Documentación
+- `migracion_output/triggers_procedures_TIMESTAMP.sql` - Plantillas T-SQL
+
+**IMPORTANTE:** Requiere conversión manual de sintaxis Firebird → T-SQL
+
+#### Paso 3: Analizar Normalización (Opcional)
+```bash
+python analizar_normalizacion.py
+```
+
+**Genera:**
+- `migracion_output/analisis_normalizacion_TIMESTAMP.txt`
+
+**Detecta:**
+- Tablas sin Primary Key
+- Columnas con >50% NULLs
+- Posibles Foreign Keys faltantes
+
+#### Paso 4: Exportar Datos (Opción 8 - Recomendado)
+```bash
+python exportar_data_optimizada.py
+```
+
+**Genera:**
+- `migracion_output/data_export_optimizada_TIMESTAMP/`
+  - Un CSV por tabla
+  - SALAJUSTES solo con último período
+  - `_RESUMEN.txt` con estadísticas
+
+**Ventajas:**
+- ✅ Mucho más rápido (minutos vs horas)
+- ✅ Archivos más pequeños (MB vs GB)
+- ✅ Suficiente para sistema actual
+- ✅ SALAJUSTES: ~196K registros en lugar de ~12M
+
+**¿Por qué optimizado?**
+SALAJUSTES guarda historial mensual desde 2015. Para el sistema actual solo necesitas el último período (responsable actual, ubicación actual, depreciación actual).
+
+---
+
+## 📊 Tablas Principales
+
+| Tabla | Descripción | Registros |
+|-------|-------------|-----------|
+| **MATERIAL** | Activos físicos (placa, descripción, serial, valor) | ~196K |
+| **TERCEROS** | Personas (cédula, nombre, cargo) | ~6K |
+| **SALAJUSTES** | Asignaciones mensuales (responsable, ubicación, depreciación) | ~12M |
+| **SERVICIO** | Dependencias y servicios | ~124 |
+| **GRUPMAT** | Grupos de materiales | ~252 |
+
+**Relaciones:**
+- MATERIAL → GRUPMAT (grupo del activo)
+- SALAJUSTES → MATERIAL (qué activo)
+- SALAJUSTES → TERCEROS (quién lo tiene)
+- SALAJUSTES → SERVICIO (dónde está)
+
+---
+
+## 🔧 Configuración
 
 ### Modo Local (Base de datos en tu PC)
-
 ```ini
 [FIREBIRD]
 host = 
@@ -86,11 +199,7 @@ password = masterkey
 charset = WIN1252
 ```
 
-- `host` vacío = modo embedded (base de datos local)
-- `database` = ruta al archivo .gdb en tu PC
-
 ### Modo Remoto (Servidor Firebird)
-
 ```ini
 [FIREBIRD]
 host = 172.16.20.62
@@ -98,44 +207,162 @@ database = D:/DATOS TNS/ACTIVOS_UNP_COPIA.GDB
 user = SYSDBA
 password = masterkey
 charset = WIN1252
+port = 3050
 ```
 
-- `host` = IP del servidor Firebird
-- `database` = ruta del archivo .gdb EN EL SERVIDOR
-- Requiere acceso a la red UNP
-- Puerto 3050 debe estar abierto
+---
 
-### Cómo editar
-1. Usar opción 6 del menú (Editar configuración)
-2. O abrir `configuracion.ini` con Notepad
-3. Modificar los valores necesarios
-4. Guardar y cerrar
-5. Probar conexión (opción 1)
+## 🚀 Importar a SQL Server
+
+### 1. Crear Base de Datos
+```sql
+CREATE DATABASE [ACTIVOS_UNP]
+GO
+
+USE [ACTIVOS_UNP]
+GO
+```
+
+### 2. Ejecutar Script de Esquema
+```sql
+-- Ejecutar: migracion_output/modelo_er_TIMESTAMP.sql
+-- Crea todas las tablas con PKs y FKs
+```
+
+### 3. Importar CSVs
+
+**Opción A: SQL Server Management Studio**
+1. Clic derecho en BD → Tasks → Import Flat File
+2. Seleccionar CSV
+3. Mapear columnas
+4. Ejecutar
+
+**Opción B: BULK INSERT**
+```sql
+-- Importar en orden de dependencias:
+-- 1. Tablas sin FKs (TERCEROS, SERVICIO, GRUPMAT)
+-- 2. Tablas con FKs (MATERIAL, SALAJUSTES)
+
+BULK INSERT [MATERIAL]
+FROM 'C:\ruta\migracion_output\data_export_optimizada_20260423\MATERIAL.csv'
+WITH (
+    FIRSTROW = 2,              -- Saltar encabezado
+    FIELDTERMINATOR = ',',
+    ROWTERMINATOR = '\n',
+    CODEPAGE = '65001',        -- UTF-8
+    TABLOCK
+)
+GO
+```
+
+### 4. Validar
+```sql
+-- Comparar conteos
+SELECT 'MATERIAL' AS Tabla, COUNT(*) AS Registros FROM [MATERIAL]
+UNION ALL
+SELECT 'TERCEROS', COUNT(*) FROM [TERCEROS]
+UNION ALL
+SELECT 'SALAJUSTES', COUNT(*) FROM [SALAJUSTES]
+
+-- Verificar integridad referencial
+SELECT COUNT(*) AS Huerfanos
+FROM [SALAJUSTES] s
+LEFT JOIN [MATERIAL] m ON s.MATID = m.MATID
+WHERE m.MATID IS NULL
+-- Debe retornar 0
+```
 
 ---
 
-## Tablas Principales
+## 🔄 Conversión de Triggers/SPs
 
-| Tabla | Descripción |
-|-------|-------------|
-| MATERIAL | Activos físicos (CODIGO=placa, DESMAT=descripción, SERIAL, VALORCOMP) |
-| TERCEROS | Personas (NIT=cédula, NOMBRE, CARGO) |
-| SALAJUSTES | Asignaciones de activos a personas (relaciona MATERIAL con TERCEROS) |
-| SERVICIO | Dependencias y servicios (CODSERVI, NOMSERVI) |
-| GRUPMAT | Grupos de materiales (CODIGO, DESCRIP) |
+### Diferencias Firebird → T-SQL
+
+| Firebird | SQL Server | Ejemplo |
+|----------|------------|---------|
+| `NEW.campo` | `INSERTED.campo` | En triggers INSERT/UPDATE |
+| `OLD.campo` | `DELETED.campo` | En triggers UPDATE/DELETE |
+| `\|\|` | `+` | Concatenación |
+| `SUSPEND` | `RETURN` | En stored procedures |
+| `FOR SELECT ... DO` | `CURSOR` + `WHILE` | Iteración |
+| `GEN_ID(gen, 1)` | `NEXT VALUE FOR seq` | Secuencias |
+
+### Ejemplo de Conversión
+
+**Firebird:**
+```sql
+CREATE TRIGGER TRG_MATERIAL_BI FOR MATERIAL
+BEFORE INSERT
+AS
+BEGIN
+  IF (NEW.CODIGO IS NULL) THEN
+    NEW.CODIGO = GEN_ID(GEN_MATERIAL_ID, 1);
+  NEW.FECHA_CREACION = CURRENT_TIMESTAMP;
+END
+```
+
+**SQL Server:**
+```sql
+CREATE TRIGGER [TRG_MATERIAL_BI]
+ON [MATERIAL]
+INSTEAD OF INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    INSERT INTO [MATERIAL] (CODIGO, FECHA_CREACION, ...)
+    SELECT 
+        ISNULL(CODIGO, NEXT VALUE FOR SEQ_MATERIAL_ID),
+        GETDATE(),
+        ...
+    FROM INSERTED;
+END
+GO
+```
 
 ---
 
-## Consultas SQL Útiles
+## ⚠️ Problemas Comunes
+
+### "Python no esta instalado"
+**Solución:**
+- Instalar Python desde https://www.python.org/downloads/
+- Marcar **[X] Add Python to PATH**
+
+### "Dependencia no instalada" (fdb)
+**Solución:**
+- Usar opción A del menú para instalar
+- O ejecutar: `python -m pip install --user fdb`
+
+### "Your user name and password are not defined"
+**Solución:**
+- Editar `configuracion.ini` con credenciales reales
+- No usar placeholders como "TU_PASSWORD_AQUI"
+- Usar opción B del menú para editar
+
+### "unavailable database"
+**Solución:**
+- Verificar que el archivo .gdb existe en la ruta configurada
+- Si es local: verificar ruta completa
+- Si es remoto: verificar conectividad de red
+
+### "No se encontraron activos para la cedula"
+**Solución:**
+- Verificar que la cédula existe
+- Probar con cédula de ejemplo: `43875542`
+
+---
+
+## 📝 Consultas SQL Útiles
 
 ### Ver activos de una persona
 ```sql
 SELECT 
     t.NIT AS CEDULA,
-    t.NOMBRE AS NOMBRE_RESPONSABLE,
+    t.NOMBRE,
     m.CODIGO AS PLACA,
     m.DESMAT AS DESCRIPCION,
-    m.SERIAL AS SERIAL
+    m.SERIAL
 FROM MATERIAL m 
 INNER JOIN SALAJUSTES sa ON m.MATID = sa.MATID
 INNER JOIN TERCEROS t ON sa.RESPONSABLE = t.TERID
@@ -144,16 +371,6 @@ WHERE
     AND m.FEC_BAJA IS NULL
     AND sa.ANO = 2026
     AND sa.MES = '02'
-```
-
-### Ver estructura de una tabla
-```sql
-SELECT 
-    RDB$FIELD_NAME AS COLUMNA,
-    RDB$FIELD_TYPE AS TIPO
-FROM RDB$RELATION_FIELDS
-WHERE RDB$RELATION_NAME = 'MATERIAL'
-ORDER BY RDB$FIELD_POSITION
 ```
 
 ### Contar activos por persona
@@ -175,150 +392,70 @@ ORDER BY TOTAL_ACTIVOS DESC
 
 ---
 
-## Herramientas Gráficas (Opcional)
-
-Si prefieres una interfaz gráfica para consultas SQL:
-
-### IBExpert (Recomendado)
-- Descarga: https://www.ibexpert.net/ibe/
-- GUI completa para Firebird
-- Editor SQL, explorador visual, generador de reportes
-
-### FlameRobin
-- Descarga: http://www.flamerobin.org/
-- Open source, ligero
-- Gratis, portable
-
-### DBeaver
-- Descarga: https://dbeaver.io/
-- Universal (soporta muchas BD)
-- Moderno, multiplataforma
-
----
-
-## Problemas Comunes
-
-### "Python no esta instalado"
-**Solución:**
-- Instalar Python desde https://www.python.org/downloads/
-- Marcar **[X] Add Python to PATH** durante instalación
-- Reiniciar CMD si ya estaba abierto
-
-### "Dependencia no instalada" (fdb)
-**Solución:**
-- El .bat pregunta si deseas instalarla
-- Responder **S**
-- Esperar a que instale (1 minuto)
-- Cerrar y ejecutar `INICIAR.bat` de nuevo
-
-### "unavailable database"
-**Solución:**
-- Verificar que el archivo .gdb existe en la ruta configurada
-- Si es local: verificar que `C:\temp\activos.gdb` existe
-- Si es remoto: verificar conectividad de red al servidor
-- Usar opción 6 para editar la ruta en `configuracion.ini`
-
-### "Error de conexion al servidor"
-**Solución:**
-- Verificar que el servidor Firebird está corriendo
-- Verificar conectividad de red: `ping 172.16.20.62`
-- Verificar que el puerto 3050 está abierto
-- Verificar credenciales en `configuracion.ini`
-
-### "No se encontraron activos para la cedula"
-**Solución:**
-- Verificar que la cédula existe en la base de datos
-- Verificar que tiene activos asignados
-- Probar con cédula de ejemplo: `43875542`
-
-### El .bat se cierra inmediatamente después de instalar
-**Solución:**
-- Esto es normal después de instalar fdb
-- Simplemente ejecutar `INICIAR.bat` de nuevo
-- Los cambios ya están aplicados
-
----
-
-## Requisitos
+## 🛠️ Requisitos Técnicos
 
 ### Mínimos
 - Windows 7 o superior
 - Python 3.11 o superior
-- Conexión a internet (solo para instalar fdb)
 - 50 MB de espacio en disco
+- Conexión a internet (solo para instalar fdb)
 
 ### Recomendados
 - Windows 10 o superior
-- Python 3.12
-- Acceso a la red UNP (para servidor remoto)
+- Python 3.12+
+- Acceso a red UNP (para servidor remoto)
 
 ---
 
-## Conectividad
+## 🔒 Seguridad
 
-### Verificar acceso al servidor
-```bash
-# Windows
-Test-NetConnection -ComputerName 172.16.20.62 -Port 3050
+### Credenciales
+- **NUNCA** subir `configuracion.ini` a repositorios públicos
+- Solicitar credenciales al administrador de BD
+- Usar usuario de solo lectura en producción
 
-# Linux/Mac
-nc -zv 172.16.20.62 3050
-```
-
-### Puerto requerido
-- **Puerto:** 3050 (default Firebird)
-- **Protocolo:** TCP
-- **Firewall:** Debe estar abierto
+### Base de Datos
+- Este kit opera en modo **SOLO LECTURA**
+- No ejecuta DELETE, UPDATE o DROP
+- Seguro para usar en producción
 
 ---
 
-## Seguridad
+## 📞 Soporte
 
-### Primera Configuración
+**Documentación:**
+- Este README.md
 
-1. Copiar `configuracion.ini.example` a `configuracion.ini`
-2. Editar `configuracion.ini` con tus credenciales
-3. Solicitar credenciales al administrador de BD
+**Verificación:**
+- Ejecutar `verificar_dependencias.bat`
+- Usar opción 9 del menú INICIAR.bat
 
-### Credenciales de Desarrollo
-```
-Usuario: SYSDBA
-Password: (solicitar al administrador)
-```
-
-### Credenciales de Producción
-Solicitar al administrador de base de datos:
-- Usuario de solo lectura
-- Password seguro
-- Permisos limitados
-
-**IMPORTANTE:** Nunca subir `configuracion.ini` a repositorios públicos
+**Contacto:**
+- Equipo de desarrollo UNP
+- Administrador de base de datos
 
 ---
 
-## Notas Importantes
+## 📌 Notas Importantes
 
-- Base de datos en modo **SOLO LECTURA** (no modifica datos)
-- Usar charset **WIN1252** siempre
-- Incluir **fbclient.dll** en la misma carpeta (NO ELIMINAR)
-- No compartir credenciales de producción
-- No ejecutar DELETE, UPDATE o DROP en producción
-- Firebird embedded NO soporta rutas UNC (`\\servidor\path`)
-- Para servidor remoto, usar IP y ruta en el servidor
+### SALAJUSTES
+- Guarda historial mensual desde 2015
+- ~12M registros totales
+- Para migración usar **exportación optimizada** (opción 8)
+- Solo último período es suficiente para sistema actual
+
+### Charset
+- Firebird usa **WIN1252**
+- SQL Server usa **Latin1_General_CI_AS** o **UTF-8**
+- CSVs se exportan en **UTF-8 con BOM**
+
+### Archivos Generados
+- Todos se guardan en `migracion_output/`
+- Incluir timestamp en nombre
+- Ignorados por Git (.gitignore)
 
 ---
 
-## Soporte
-
-Para dudas o problemas:
-1. Revisar esta documentación
-2. Usar opción 5 (Verificar instalación)
-3. Contactar al equipo de desarrollo del ecosistema UNP
-
----
-
-## Versión
-
-- **Versión:** 1.0
-- **Fecha:** Abril 2026
-- **Módulo:** SGAI - Almacén - Consulta de Activos
+**Versión:** 2.0  
+**Fecha:** Abril 2026  
+**Módulo:** SGAI - Almacén - Migración de Activos

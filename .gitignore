@@ -6,7 +6,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.pyc
 
 # Archivos de Excel temporales
 ~$*.xlsx
 *.tmp
+
+# Carpeta de salida de migracion
+migracion_output/

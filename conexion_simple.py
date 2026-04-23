@@ -7,17 +7,11 @@ import fdb
 import configparser
 import os
 import sys
+from validar_config import validar_o_salir
 
 def cargar_configuracion():
     """Carga la configuración desde configuracion.ini"""
-    config = configparser.ConfigParser()
-    config_file = os.path.join(os.path.dirname(__file__), 'configuracion.ini')
-    
-    if not os.path.exists(config_file):
-        print("[ERROR] No se encontro el archivo configuracion.ini")
-        sys.exit(1)
-    
-    config.read(config_file)
+    config = validar_o_salir()
     return config['FIREBIRD']
 
 def probar_conexion():
