@@ -1,8 +1,11 @@
 @echo off
 title Migracion Completa Firebird a SQL Server - UNP
 
+REM Usar py launcher de Windows
+set PYTHON_CMD=py
+
 REM Verificar Python silenciosamente
-python --version >nul 2>&1
+%PYTHON_CMD% --version >nul 2>&1
 if errorlevel 1 (
     cls
     echo ================================================================================
@@ -18,7 +21,7 @@ if errorlevel 1 (
 )
 
 REM Verificar fdb silenciosamente
-python -c "import fdb" >nul 2>&1
+%PYTHON_CMD% -c "import fdb" >nul 2>&1
 if errorlevel 1 (
     cls
     echo ================================================================================
@@ -28,7 +31,7 @@ if errorlevel 1 (
     echo [ERROR] El paquete 'fdb' no esta instalado.
     echo.
     echo Para instalar, ejecuta:
-    echo   python -m pip install --user fdb
+    echo   py -m pip install --user fdb
     echo.
     echo O ejecuta INICIAR.bat que te guiara en la instalacion.
     echo.
@@ -65,7 +68,7 @@ echo ===========================================================================
 echo PASO 1/4: EXTRAYENDO MODELO ENTIDAD-RELACION
 echo ================================================================================
 echo.
-python extraer_modelo_er.py
+%PYTHON_CMD% extraer_modelo_er.py
 if errorlevel 1 (
     echo.
     echo [ERROR] Fallo la extraccion del modelo.
@@ -78,7 +81,7 @@ echo ===========================================================================
 echo PASO 2/4: EXTRAYENDO TRIGGERS Y STORED PROCEDURES
 echo ================================================================================
 echo.
-python extraer_triggers_procedures.py
+%PYTHON_CMD% extraer_triggers_procedures.py
 if errorlevel 1 (
     echo.
     echo [ERROR] Fallo la extraccion de triggers y procedures.
@@ -91,7 +94,7 @@ echo ===========================================================================
 echo PASO 3/4: ANALIZANDO PROBLEMAS DE NORMALIZACION
 echo ================================================================================
 echo.
-python analizar_normalizacion.py
+%PYTHON_CMD% analizar_normalizacion.py
 if errorlevel 1 (
     echo.
     echo [ERROR] Fallo el analisis de normalizacion.
@@ -104,7 +107,7 @@ echo ===========================================================================
 echo PASO 4/4: EXPORTANDO DATA COMPLETA A CSV
 echo ================================================================================
 echo.
-python exportar_data_completa.py
+%PYTHON_CMD% exportar_data_completa.py
 if errorlevel 1 (
     echo.
     echo [ERROR] Fallo la exportacion de data.

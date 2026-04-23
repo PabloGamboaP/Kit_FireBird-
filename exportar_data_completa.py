@@ -123,9 +123,9 @@ def exportar_data():
     tablas = obtener_tablas(cur)
     print(f"\n✓ Encontradas {len(tablas)} tablas para exportar")
     
-    # Crear carpeta de salida
+    # Crear carpeta de salida dentro de migracion_output
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    carpeta_salida = f"data_export_{timestamp}"
+    carpeta_salida = os.path.join("migracion_output", f"data_export_{timestamp}")
     os.makedirs(carpeta_salida, exist_ok=True)
     
     print(f"✓ Carpeta de salida: {carpeta_salida}\n")

@@ -7,9 +7,12 @@ echo                    VERIFICACION DE DEPENDENCIAS
 echo ================================================================================
 echo.
 
+REM Usar py launcher de Windows
+set PYTHON_CMD=py
+
 REM Verificar Python
 echo [1/4] Verificando Python...
-python --version >nul 2>&1
+%PYTHON_CMD% --version >nul 2>&1
 if errorlevel 1 (
     echo   [X] Python NO instalado
     echo.
@@ -17,7 +20,7 @@ if errorlevel 1 (
     echo.
     set PYTHON_OK=0
 ) else (
-    for /f "tokens=*" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
+    for /f "tokens=*" %%i in ('%PYTHON_CMD% --version 2^>^&1') do set PYTHON_VERSION=%%i
     echo   [OK] %PYTHON_VERSION%
     set PYTHON_OK=1
 )
@@ -25,16 +28,16 @@ if errorlevel 1 (
 REM Verificar fdb
 echo.
 echo [2/4] Verificando paquete fdb...
-python -c "import fdb" >nul 2>&1
+%PYTHON_CMD% -c "import fdb" >nul 2>&1
 if errorlevel 1 (
     echo   [X] fdb NO instalado
     echo.
-    echo   Para instalar: python -m pip install --user fdb
+    echo   Para instalar: py -m pip install --user fdb
     echo   O ejecuta INICIAR.bat para instalacion guiada
     echo.
     set FDB_OK=0
 ) else (
-    for /f "tokens=*" %%i in ('python -c "import fdb; print(fdb.__version__)" 2^>^&1') do set FDB_VERSION=%%i
+    for /f "tokens=*" %%i in ('%PYTHON_CMD% -c "import fdb; print(fdb.__version__)" 2^>^&1') do set FDB_VERSION=%%i
     echo   [OK] fdb version %FDB_VERSION%
     set FDB_OK=1
 )

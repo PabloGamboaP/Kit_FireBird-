@@ -168,9 +168,13 @@ def analizar_normalizacion():
     tablas = obtener_tablas(cur)
     print(f"\n✓ Analizando {len(tablas)} tablas...\n")
     
+    # Crear carpeta de salida
+    carpeta_salida = "migracion_output"
+    os.makedirs(carpeta_salida, exist_ok=True)
+    
     # Archivo de salida
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    archivo_salida = f"analisis_normalizacion_{timestamp}.txt"
+    archivo_salida = os.path.join(carpeta_salida, f"analisis_normalizacion_{timestamp}.txt")
     
     with open(archivo_salida, 'w', encoding='utf-8') as f:
         f.write("=" * 100 + "\n")

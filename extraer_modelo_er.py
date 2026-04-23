@@ -177,10 +177,14 @@ def extraer_modelo():
     tablas = obtener_tablas(cur)
     print(f"\n✓ Encontradas {len(tablas)} tablas")
     
+    # Crear carpeta de salida
+    carpeta_salida = "migracion_output"
+    os.makedirs(carpeta_salida, exist_ok=True)
+    
     # Archivos de salida
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    archivo_txt = f"modelo_er_{timestamp}.txt"
-    archivo_sql = f"modelo_er_{timestamp}.sql"
+    archivo_txt = os.path.join(carpeta_salida, f"modelo_er_{timestamp}.txt")
+    archivo_sql = os.path.join(carpeta_salida, f"modelo_er_{timestamp}.sql")
     
     with open(archivo_txt, 'w', encoding='utf-8') as f_txt, \
          open(archivo_sql, 'w', encoding='utf-8') as f_sql:

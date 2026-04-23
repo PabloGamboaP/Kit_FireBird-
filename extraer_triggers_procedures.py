@@ -151,10 +151,14 @@ def extraer_triggers_procedures():
     print(f"\n✓ Encontrados {len(triggers)} triggers")
     print(f"✓ Encontrados {len(procedures)} stored procedures")
     
+    # Crear carpeta de salida
+    carpeta_salida = "migracion_output"
+    os.makedirs(carpeta_salida, exist_ok=True)
+    
     # Archivos de salida
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    archivo_txt = f"triggers_procedures_{timestamp}.txt"
-    archivo_sql = f"triggers_procedures_{timestamp}.sql"
+    archivo_txt = os.path.join(carpeta_salida, f"triggers_procedures_{timestamp}.txt")
+    archivo_sql = os.path.join(carpeta_salida, f"triggers_procedures_{timestamp}.sql")
     
     with open(archivo_txt, 'w', encoding='utf-8') as f_txt, \
          open(archivo_sql, 'w', encoding='utf-8') as f_sql:

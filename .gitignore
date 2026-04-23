@@ -12,10 +12,5 @@ __pycache__/
 ~$*.xlsx
 *.tmp
 
-# Archivos generados por scripts de migracion
-modelo_er_*.txt
-modelo_er_*.sql
-triggers_procedures_*.txt
-triggers_procedures_*.sql
-analisis_normalizacion_*.txt
-data_export_*/
+# Carpeta de salida de migracion
+migracion_output/
