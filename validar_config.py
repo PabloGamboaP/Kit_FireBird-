@@ -43,11 +43,12 @@ def validar_configuracion():
     
     # Validar que no sean valores placeholder
     password = cfg['password'].strip()
-    if password in ['TU_PASSWORD_AQUI', 'password', 'CAMBIAR', 'PLACEHOLDER']:
+    if password.upper() in ['TU_PASSWORD_AQUI', 'PASSWORD', 'CAMBIAR', 'PLACEHOLDER', 'CONTRASEÑA']:
         return False, "El password en configuracion.ini es un placeholder. Debes configurar el password real.", None
     
     database = cfg['database'].strip()
-    if database in ['C:\\temp\\activos.gdb', 'ruta/a/base.gdb']:
+    # No validar si es el ejemplo exacto, pero permitir rutas reales
+    if database == 'ruta/a/base.gdb':
         return False, "La ruta de database en configuracion.ini parece ser un placeholder. Verifica la ruta correcta.", None
     
     # Validar que el archivo de base de datos existe (si es local)
