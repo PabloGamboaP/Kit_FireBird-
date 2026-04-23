@@ -19,12 +19,13 @@ echo.
 echo   MIGRACION A SQL SERVER:
 echo   5. Extraer modelo Entidad-Relacion (tablas, PKs, FKs)
 echo   6. Extraer Triggers y Stored Procedures
-echo   7. Exportar toda la data (CSV para normalizacion)
+echo   7. Exportar toda la data (CSV completo - puede ser pesado)
+echo   8. Exportar data optimizada (CSV solo ultimo periodo)
 echo.
 echo   CONFIGURACION:
-echo   8. Verificar instalacion
-echo   9. Instalar/Actualizar fdb
-echo   A. Editar configuracion
+echo   9. Verificar instalacion
+echo   A. Instalar/Actualizar fdb
+echo   B. Editar configuracion
 echo   0. Salir
 echo.
 echo ================================================================================
@@ -37,9 +38,10 @@ if "%opcion%"=="4" goto CONSULTAR_ACTIVOS
 if "%opcion%"=="5" goto EXTRAER_MODELO
 if "%opcion%"=="6" goto EXTRAER_TRIGGERS
 if "%opcion%"=="7" goto EXPORTAR_DATA
-if "%opcion%"=="8" goto VERIFICAR
-if "%opcion%"=="9" goto INSTALAR_FDB
-if /i "%opcion%"=="A" goto EDITAR_CONFIG
+if "%opcion%"=="8" goto EXPORTAR_DATA_OPTIMIZADA
+if "%opcion%"=="9" goto VERIFICAR
+if /i "%opcion%"=="A" goto INSTALAR_FDB
+if /i "%opcion%"=="B" goto EDITAR_CONFIG
 if "%opcion%"=="0" goto SALIR
 goto MENU
 
@@ -127,12 +129,38 @@ echo ===========================================================================
 echo                    EXPORTAR DATA COMPLETA (CSV)
 echo ================================================================================
 echo.
-echo ADVERTENCIA: Puede tomar varios minutos.
+echo ADVERTENCIA: Exporta TODO el historial (puede ser muy pesado)
+echo             SALAJUSTES tendra ~12M registros
+echo.
+echo Recomendacion: Usa opcion 8 (Data Optimizada) en su lugar
+echo.
+set /p confirmar="Deseas continuar con exportacion completa? (S/N): "
+if /i not "%confirmar%"=="S" goto MENU
+echo.
+"%PYTHON_CMD%" exportar_data_completa.py
+echo.
+pause
+goto MENU
+
+:EXPORTAR_DATA_OPTIMIZADA
+cls
+echo ================================================================================
+echo                    EXPORTAR DATA OPTIMIZADA (CSV)
+echo ================================================================================
+echo.
+echo Este proceso exporta:
+echo   - Todas las tablas completas
+echo   - SALAJUSTES solo con el ultimo periodo (reduce de 12M a 196K registros)
+echo.
+echo Ventajas:
+echo   - Mucho mas rapido
+echo   - Archivos mas pequenos
+echo   - Suficiente para sistema actual
 echo.
 set /p confirmar="Deseas continuar? (S/N): "
 if /i not "%confirmar%"=="S" goto MENU
 echo.
-"%PYTHON_CMD%" exportar_data_completa.py
+"%PYTHON_CMD%" exportar_data_optimizada.py
 echo.
 pause
 goto MENU
