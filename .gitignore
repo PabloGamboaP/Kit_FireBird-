@@ -1,0 +1,12 @@
+# Ignorar archivo de configuracion con credenciales reales
+configuracion.ini
+
+# Archivos temporales de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Archivos de Excel temporales
+~$*.xlsx
+*.tmp

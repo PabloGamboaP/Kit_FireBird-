@@ -4,14 +4,21 @@ Sistema portátil para consultar y explorar la base de datos Firebird de activos
 
 ---
 
-## Inicio Rápido (2 pasos)
+## Inicio Rápido (3 pasos)
 
 ### 1. Instalar Python
 - Descargar: https://www.python.org/downloads/
 - Durante instalación marcar: **[X] Add Python to PATH**
 - Tiempo: 5 minutos
 
-### 2. Ejecutar INICIAR.bat
+### 2. Configurar conexión
+- Copiar `configuracion.ini.example` a `configuracion.ini`
+- Editar `configuracion.ini` con tus credenciales:
+  - `password`: Solicitar al administrador de BD
+  - `database`: Ruta al archivo .gdb
+  - `host`: IP del servidor (o vacío para modo local)
+
+### 3. Ejecutar INICIAR.bat
 - Doble clic en: `INICIAR.bat`
 - El script detecta automáticamente si falta `fdb`
 - Te pregunta si deseas instalarlo (responde **S**)
@@ -29,7 +36,9 @@ KIT_CONEXION_FIREBIRD/
 ├── README.md                    # Esta documentación
 ├── INICIAR.bat                  # Menu principal (USAR ESTE)
 ├── INICIAR_CON_VENV.bat        # Para desarrolladores con Django
-├── configuracion.ini            # Configuración de conexión
+├── configuracion.ini.example    # Plantilla de configuración (COPIAR Y RENOMBRAR)
+├── configuracion.ini            # Tu configuración (NO SUBIR A GIT)
+├── .gitignore                   # Protege credenciales
 ├── fbclient.dll                # Cliente Firebird 64-bit (NO ELIMINAR)
 ├── conexion_simple.py          # Script: Probar conexión
 ├── explorar_tablas.py          # Script: Listar y explorar tablas
@@ -265,18 +274,25 @@ nc -zv 172.16.20.62 3050
 
 ## Seguridad
 
+### Primera Configuración
+
+1. Copiar `configuracion.ini.example` a `configuracion.ini`
+2. Editar `configuracion.ini` con tus credenciales
+3. Solicitar credenciales al administrador de BD
+
 ### Credenciales de Desarrollo
 ```
 Usuario: SYSDBA
-Password: masterkey
+Password: (solicitar al administrador)
 ```
-**ADVERTENCIA:** Solo para desarrollo/pruebas
 
 ### Credenciales de Producción
 Solicitar al administrador de base de datos:
 - Usuario de solo lectura
 - Password seguro
 - Permisos limitados
+
+**IMPORTANTE:** Nunca subir `configuracion.ini` a repositorios públicos
 
 ---
 
