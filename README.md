@@ -195,7 +195,7 @@ SALAJUSTES guarda historial mensual desde 2015. Para el sistema actual solo nece
 host = 
 database = C:\temp\activos.gdb
 user = SYSDBA
-password = masterkey
+password = ****
 charset = WIN1252
 ```
 
@@ -205,7 +205,7 @@ charset = WIN1252
 host = 172.16.20.62
 database = D:/DATOS TNS/ACTIVOS_UNP_COPIA.GDB
 user = SYSDBA
-password = masterkey
+password = *****
 charset = WIN1252
 port = 3050
 ```
